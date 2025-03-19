@@ -1,0 +1,4 @@
+# Exemple de configuration de base de données
+spring.datasource.url=jdbc:mariadb://localhost:3306/ma_base
+spring.datasource.username=VOTRE_USER
+spring.datasource.password=VOTRE_MDP
