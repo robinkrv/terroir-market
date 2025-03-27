@@ -1,8 +1,6 @@
 package fr.ecommerce.models.entities;
 
 import fr.ecommerce.models.base.AbstractEntity;
-import fr.ecommerce.models.entities.Product;
-import fr.ecommerce.models.entities.Promotion;
 import jakarta.persistence.*;
 
 @Entity

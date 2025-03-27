@@ -3,7 +3,7 @@ package fr.ecommerce.constants;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @JsonFormat(shape = JsonFormat.Shape.STRING)
-public enum UserRole {
+public enum UserRoleName {
     ADMIN,
     MANAGER,
     USER,

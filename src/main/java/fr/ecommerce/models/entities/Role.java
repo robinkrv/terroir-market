@@ -1,5 +1,6 @@
 package fr.ecommerce.models.entities;
 
+import fr.ecommerce.constants.UserRoleName;
 import fr.ecommerce.models.base.AbstractEntity;
 import jakarta.persistence.*;
 
@@ -10,7 +11,7 @@ import java.util.List;
 public class Role extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "name", nullable = false)
-    private UserRole name;
+    private UserRoleName name;
 
     @OneToMany(mappedBy = "role")
     private List<RolePermission> rolePermissions;
@@ -19,11 +20,11 @@ public class Role extends AbstractEntity {
     private List<UserRole> userRoles;
 
 
-    public UserRole getName() {
+    public UserRoleName getName() {
         return name;
     }
 
-    public void setName(UserRole name) {
+    public void setName(UserRoleName name) {
         this.name = name;
     }
 

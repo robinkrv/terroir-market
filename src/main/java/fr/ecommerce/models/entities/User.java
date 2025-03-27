@@ -14,15 +14,20 @@ import java.util.List;
 @Table(name = "users")
 public class User extends AbstractEntity {
 
-    @NotBlank(message = "Un nom d'utilisateur est requis")
-    @Size(min = 3, max = 100, message = "Le nom doit contenir entre 3 et 50 caractères.")
-    @Column(name = "username")
+    @NotBlank(message = "Veuillez renseigner votre prénom")
+    @Size(min = 1, max = 100, message = "Ce prénom ne peut pas être enregistré")
+    @Column(name = "firstname")
     private String firstname;
 
     @NotBlank(message = "Veuillez renseigner votre nom")
     @Size(min = 1, max = 100, message = "Ce nom ne peut pas être enregistré")
     @Column(name = "name")
     private String name;
+
+    @NotBlank(message = "Un nom d'utilisateur est requis")
+    @Size(min = 3, max = 100, message = "Le nom doit contenir entre 3 et 50 caractères.")
+    @Column(name = "username")
+    private String username;
 
     @Email
     @Size(max = 100, message = "L'email ne doit pas dépasser 100 caractères")
@@ -31,7 +36,6 @@ public class User extends AbstractEntity {
 
     @NotBlank(message = "Le mot de passe est obligatoire.")
     @Size(min = 3, max = 20, message = "Le mot de passe doit contenir entre 3 et 20 caractères.")
-    @JsonIgnore
     @Column(name = "password")
     private String password;
 
@@ -56,6 +60,14 @@ public class User extends AbstractEntity {
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
