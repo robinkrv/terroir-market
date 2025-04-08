@@ -13,8 +13,8 @@ public class UserDTO {
     private String phoneNumber;
     private AccountStatus accountStatus;
     private List<AddressDTO> addresses;
-    private List<RoleDTO> roles;
-    private List<MarketingConsentDTO> marketingConsents;
+    private List<Long> rolesIds;
+
 
     // 🔥 Constructeur vide (pour Jackson / Spring)
     public UserDTO() {}
@@ -22,8 +22,7 @@ public class UserDTO {
     // 🔥 Constructeur complet
     public UserDTO(Long id, String firstname, String name, String username, String email,
                    String phoneNumber, AccountStatus accountStatus,
-                   List<AddressDTO> addresses, List<RoleDTO> roles,
-                   List<MarketingConsentDTO> marketingConsents) {
+                   List<AddressDTO> addresses, List<Long> rolesIds){
         this.id = id;
         this.firstname = firstname;
         this.name = name;
@@ -32,8 +31,7 @@ public class UserDTO {
         this.phoneNumber = phoneNumber;
         this.accountStatus = accountStatus;
         this.addresses = addresses;
-        this.roles = roles;
-        this.marketingConsents = marketingConsents;
+        this.rolesIds = rolesIds;
     }
 
     public Long getId() {
@@ -100,20 +98,12 @@ public class UserDTO {
         this.addresses = addresses;
     }
 
-    public List<RoleDTO> getRoles() {
-        return roles;
+    public List<Long> getRolesIds() {
+        return rolesIds;
     }
 
-    public void setRoles(List<RoleDTO> roles) {
-        this.roles = roles;
-    }
-
-    public List<MarketingConsentDTO> getMarketingConsents() {
-        return marketingConsents;
-    }
-
-    public void setMarketingConsents(List<MarketingConsentDTO> marketingConsents) {
-        this.marketingConsents = marketingConsents;
+    public void setRolesIds(List<Long> rolesIds) {
+        this.rolesIds = rolesIds;
     }
 }
 

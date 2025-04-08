@@ -7,12 +7,15 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
 import java.util.List;
 
 @Entity
 @Table(name = "users")
-public class User extends AbstractEntity {
+public class User extends AbstractEntity implements UserDetails {
 
     @NotBlank(message = "Veuillez renseigner votre prénom")
     @Size(min = 1, max = 100, message = "Ce prénom ne peut pas être enregistré")
@@ -54,6 +57,11 @@ public class User extends AbstractEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MarketingConsent> marketingConsents;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return userRoles; // Attention : il faut que `UserRole` implémente `GrantedAuthority`
+    }
 
     public String getFirstname() { return firstname; }
     public void setFirstname(String firstname) { this.firstname = firstname; }
