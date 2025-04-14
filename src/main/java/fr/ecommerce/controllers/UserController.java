@@ -3,11 +3,14 @@ package fr.ecommerce.controllers;
 import fr.ecommerce.dto.RegisterDTO;
 import fr.ecommerce.dto.UserDTO;
 import fr.ecommerce.dto.ResponseDTO;
+import fr.ecommerce.dto.UserUpdateDTO;
+import fr.ecommerce.models.entities.User;
 import fr.ecommerce.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -46,4 +49,25 @@ public class UserController {
                     .body(ResponseDTO.error("Utilisateur non trouvé"));
         }
     }
+
+    @GetMapping
+    public List<UserDTO> getAllUsers() {
+        // Retourne la liste des utilisateurs récupérée dans le service
+        return userService.getAllUsers();
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @RequestBody UserUpdateDTO userUpdateDTO) {
+        UserDTO updatedUserDTO = userService.updateUser(id, userUpdateDTO);
+        return ResponseEntity.ok(updatedUserDTO);
+    }
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResponseDTO<Void>> deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+        ResponseDTO<Void> response = ResponseDTO.success("L'utilisateur a été supprimé avec succès.", null);
+        return ResponseEntity.ok(response);
+    }
 }
+
