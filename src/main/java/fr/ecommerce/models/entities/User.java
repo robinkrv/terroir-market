@@ -38,7 +38,7 @@ public class User extends AbstractEntity implements UserDetails {
     private String email;
 
     @NotBlank(message = "Le mot de passe est obligatoire.")
-    @Size(min = 3, max = 20, message = "Le mot de passe doit contenir entre 3 et 20 caractères.")
+    @Size(min = 3, max = 100, message = "Le mot de passe doit contenir entre 3 et 100 caractères.")
     @Column(name = "password")
     private String password;
 
@@ -50,7 +50,7 @@ public class User extends AbstractEntity implements UserDetails {
     private AccountStatus accountStatus;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Address> adresses;
+    private List<Address> addresses;
 
     @OneToMany(mappedBy = "user")
     private List<UserRole> userRoles;
@@ -89,8 +89,8 @@ public class User extends AbstractEntity implements UserDetails {
     public AccountStatus getAccountStatus() { return accountStatus; }
     public void setAccountStatus(AccountStatus accountStatus) { this.accountStatus = accountStatus; }
 
-    public List<Address> getAdresses() { return adresses; }
-    public void setAdresses(List<Address> adresses) { this.adresses = adresses; }
+    public List<Address> getAddresses() { return addresses; }
+    public void setAddresses(List<Address> addresses) { this.addresses = addresses; }
 
     public List<UserRole> getUserRoles() {
         return userRoles;
