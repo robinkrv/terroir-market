@@ -11,6 +11,11 @@
           <package value="fr.terroir_market" />
         </packages>
       </persistence-unit>
+      <persistence-unit moduleName="terroir-market" name="Default">
+        <packages>
+          <package value="fr" />
+        </packages>
+      </persistence-unit>
     </persistence-units>
   </component>
 </project>

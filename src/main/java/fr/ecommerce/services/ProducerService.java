@@ -1,10 +1,7 @@
 package fr.ecommerce.services;
 
 import fr.ecommerce.constants.AccountStatus;
-import fr.ecommerce.dto.ProducerCreateDTO;
-import fr.ecommerce.dto.ProducerUpdateDTO;
-import fr.ecommerce.dto.RegisterDTO;
-import fr.ecommerce.dto.ResponseDTO;
+import fr.ecommerce.dto.*;
 import fr.ecommerce.mappers.ProducerMapper;
 import fr.ecommerce.models.entities.Producer;
 import fr.ecommerce.models.entities.Product;
@@ -12,6 +9,7 @@ import fr.ecommerce.models.entities.User;
 import fr.ecommerce.repositories.ProducerRepository;
 import fr.ecommerce.repositories.ProductRepository;
 import fr.ecommerce.repositories.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
@@ -19,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProducerService {
@@ -54,10 +53,6 @@ public class ProducerService {
         Producer producer = producerMapper.toEntity(dto);
         producer.setUser(savedUser);
 
-        if (dto.getProductIds() != null && !dto.getProductIds().isEmpty()) {
-            List<Product> products = productRepository.findAllById(dto.getProductIds());
-            producer.setProducts(products);
-        }
         return producerRepository.save(producer);
     }
 
@@ -85,16 +80,20 @@ public class ProducerService {
             userRepository.save(existingUser);
         }
 
-        if (dto.getProductIds() != null) {
-            List<Product> products = productRepository.findAllById(dto.getProductIds());
-            existingProducer.setProducts(products);
-        }
         return producerRepository.save(existingProducer);
     }
 
-    public List<Product> getProductsByProducerId(Long producerId) {
-        Producer producer = findProducerById(producerId);
-        return producer.getProducts(); // Retourne les produits liés à ce Producer
+    public List<ProductResponseDTO> getProductsByProducerId(Long producerId) {
+        Producer producer = producerRepository.findByIdWithProducts(producerId)
+                .orElseThrow(() -> new RuntimeException("Producer introuvable avec id : " + producerId));
+
+        // Transformer les produits en DTO
+        return producer.getProducts().stream()
+                .map(product -> new ProductResponseDTO(
+                        product.getId(),
+                        product.getName(),
+                        product.getPrice()
+                )).collect(Collectors.toList());
     }
 
     public void deleteProducer(Long id) {

@@ -1,6 +1,7 @@
 package fr.ecommerce.controllers;
 
 import fr.ecommerce.dto.ProducerCreateDTO;
+import fr.ecommerce.dto.ProductResponseDTO;
 import fr.ecommerce.models.entities.Producer;
 import fr.ecommerce.models.entities.Product;
 import fr.ecommerce.services.ProducerService;
@@ -53,14 +54,14 @@ public class ProducerController {
     public ResponseEntity<Producer> updateProducer(
             @PathVariable Long id,
             @Valid @RequestBody ProducerCreateDTO dto) {
-        Producer updatedProducer = producerService.updateProducer(id, dto); // Remplace tout
+        Producer updatedProducer = producerService.updateProducer(id, dto);
         return ResponseEntity.ok(updatedProducer);
     }
 
-    @GetMapping("/{producerId}/products")
-    public ResponseEntity<List<Product>> getProductsByProducer(@PathVariable Long producerId) {
-        List<Product> products = producerService.getProductsByProducerId(producerId);
-        return ResponseEntity.ok(products);
+
+    @GetMapping("/{id}/products")
+    public List<ProductResponseDTO> getProducerProducts(@PathVariable Long id) {
+        return producerService.getProductsByProducerId(id);
     }
 
     // 5. Mettre à jour partiellement un Producer (PATCH)
