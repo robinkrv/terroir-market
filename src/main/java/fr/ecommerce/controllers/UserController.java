@@ -1,15 +1,13 @@
 package fr.ecommerce.controllers;
 
-import fr.ecommerce.dto.RegisterDTO;
-import fr.ecommerce.dto.UserDTO;
-import fr.ecommerce.dto.ResponseDTO;
-import fr.ecommerce.dto.UserUpdateDTO;
+import fr.ecommerce.dto.*;
 import fr.ecommerce.models.entities.User;
 import fr.ecommerce.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,6 +60,16 @@ public class UserController {
         return ResponseEntity.ok(updatedUserDTO);
     }
 
+    @PutMapping("/password")
+    public ResponseEntity<?> updatePassword(@RequestBody UpdatePasswordDTO dto, Principal principal) {
+        // On récupère l'email de l'utilisateur courant à partir du token (ou Principal)
+        String email = principal.getName();
+
+        // Mise à jour du mot de passe
+        userService.updatePassword(email, dto);
+
+        return ResponseEntity.ok("Mot de passe mis à jour avec succès !");
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseDTO<Void>> deleteUser(@PathVariable Long id) {

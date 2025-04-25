@@ -2,6 +2,7 @@ package fr.ecommerce.services;
 
 import fr.ecommerce.constants.AccountStatus;
 import fr.ecommerce.dto.RegisterDTO;
+import fr.ecommerce.dto.UpdatePasswordDTO;
 import fr.ecommerce.dto.UserDTO;
 import fr.ecommerce.dto.UserUpdateDTO;
 import fr.ecommerce.exceptions.UserNotFoundException;
@@ -29,6 +30,7 @@ public class UserService {
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        System.out.println("PasswordEncoder utilisé : " + passwordEncoder.getClass().getName());
     }
 
     public List<UserDTO> getAllUsers() {
@@ -66,7 +68,23 @@ public class UserService {
         return userMapper.toDTO(updatedUser);
     }
 
+    public void updatePassword(String email, UpdatePasswordDTO dto) {
+        // Récupération de l'utilisateur depuis la base
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable."));
 
+        // Vérification du mot de passe actuel
+        if (!passwordEncoder.matches(dto.oldPassword(), user.getPassword())) {
+            throw new RuntimeException("Le mot de passe actuel est incorrect.");
+        }
+
+        // Encodage du nouveau mot de passe
+        String encodedNewPassword = passwordEncoder.encode(dto.newPassword());
+
+        // Mise à jour de l'utilisateur
+        user.setPassword(encodedNewPassword);
+        userRepository.save(user);
+    }
 
 
     // 🔹 Vérifie l'unicité de l'email et du username
