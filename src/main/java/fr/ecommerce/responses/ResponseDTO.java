@@ -1,4 +1,4 @@
-package fr.ecommerce.dto;
+package fr.ecommerce.responses;
 
 import java.time.Instant;
 

@@ -13,6 +13,7 @@ import java.util.List;
 @Entity
 @Table(name = "permissions")
 public class Permission extends AbstractEntity {
+
     @Column(name = "name", nullable = false, unique = true)
     @NotBlank
     @Size(min = 1, max = 255)

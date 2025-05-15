@@ -9,15 +9,33 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 
+/**
+ * The interface User mapper.
+ */
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface UserMapper {
 
-    // Instance du mapper pour pouvoir l'utiliser directement si nécessaire
+    /**
+     * The constant INSTANCE.
+     */
+// Instance du mapper pour pouvoir l'utiliser directement si nécessaire
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
-    // Méthode pour mapper les données d'un DTO vers une entité User
+    /**
+     * Update user from dto.
+     *
+     * @param dto  the dto
+     * @param user the user
+     */
+// Méthode pour mapper les données d'un DTO vers une entité User
     void updateUserFromDto(UserUpdateDTO dto, @MappingTarget User user);
 
+    /**
+     * To dto user dto.
+     *
+     * @param user the user
+     * @return the user dto
+     */
     UserDTO toDTO(User user);
 }
 

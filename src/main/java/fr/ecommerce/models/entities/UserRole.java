@@ -1,23 +1,25 @@
 package fr.ecommerce.models.entities;
 
-
-import fr.ecommerce.models.identifiers.UserRoleId;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 
 @Entity
-@Table(name = "users_roles")
+@Table(name = "users_roles",
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "role_id"})}) // Garantit l'unicité
 public class UserRole implements GrantedAuthority {
 
-    @EmbeddedId
-    private UserRoleId id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Clé primaire auto-générée
+    private Long id;
 
-    @ManyToOne
-    @MapsId("userId")  // Le champ userId est mappé sur la clé composite
+    @ManyToOne(cascade = CascadeType.REMOVE) // Active la suppression en cascade
+    @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     private User user;
 
     @ManyToOne
-    @MapsId("roleId")  // Le champ roleId est mappé sur la clé composite
+    @JoinColumn(name = "role_id", nullable = false) // Relie au rôle
     private Role role;
 
     @Override
@@ -25,27 +27,50 @@ public class UserRole implements GrantedAuthority {
         return role.getName().name(); // Retourne "USER", "ADMIN", etc.
     }
 
-    // Optionnel : Constructeur par défaut
+    // Constructeur par défaut (obligatoire pour JPA)
     public UserRole() {}
 
-    // Constructeur avec les arguments nécessaires
+    // Constructeur pour initialisation simplifiée
     public UserRole(User user, Role role) {
         this.user = user;
         this.role = role;
-        this.id = new UserRoleId(user.getId(), role.getId()); // Création de la clé composite
     }
 
-    // equals() et hashCode() basés sur les deux propriétés de la clé composite
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    // equals() et hashCode() basés sur l'identifiant auto-généré
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UserRole userRole = (UserRole) o;
-        return id.equals(userRole.id); // On compare la clé composite
+        return id != null && id.equals(userRole.id);
     }
 
     @Override
     public int hashCode() {
-        return id.hashCode(); // On utilise la méthode hashCode de UserRoleId
+        return id != null ? id.hashCode() : 0;
     }
 }

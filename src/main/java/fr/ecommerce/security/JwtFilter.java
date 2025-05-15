@@ -38,13 +38,22 @@ public class JwtFilter extends OncePerRequestFilter {
 
         // Récupère l'en-tête Authorization
         String authHeader = request.getHeader("Authorization");
+
+        // Ajout de logs pour debug
+        System.out.println("=== [DEBUG JWT FILTER] ===");
+        System.out.println("Request Path: " + requestPath);
+        System.out.println("Authorization Header: " + authHeader);
+
         String jwt = null;
         String username = null;
 
         // Vérifie si le header est présent et commence par "Bearer "
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             jwt = authHeader.substring(7); // Extrait le token après "Bearer "
-            username = jwtService.extractUsername(jwt); // Extrait le username du token
+            System.out.println("Extracted JWT: " + jwt);
+
+            username = jwtService.extractUsername(jwt);// Extrait le username du token
+            System.out.println("Extracted Username: " + username);
         }
 
         // Vérifie si le username n'est pas déjà authentifié dans le contexte de sécurité
@@ -61,7 +70,10 @@ public class JwtFilter extends OncePerRequestFilter {
 
                 // Définit le contexte de sécurité pour cette requête
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                System.out.println("User authenticated: " + username);
             }
+        } else {
+            System.out.println("Token invalid for user: " + username);
         }
 
         // Passe au filtre suivant

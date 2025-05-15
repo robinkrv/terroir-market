@@ -11,6 +11,7 @@ import java.util.List;
 @Entity
 @Table(name = "products")
 public class Product extends AbstractEntity {
+
     @Column(name = "name", nullable = false)
     @NotBlank
     private String name;

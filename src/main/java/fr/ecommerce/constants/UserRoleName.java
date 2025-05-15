@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public enum UserRoleName {
     ADMIN,
     MANAGER,
+    PRODUCER,
     USER,
     GUEST
 }

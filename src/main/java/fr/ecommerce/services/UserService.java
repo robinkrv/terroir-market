@@ -5,12 +5,15 @@ import fr.ecommerce.dto.RegisterDTO;
 import fr.ecommerce.dto.UpdatePasswordDTO;
 import fr.ecommerce.dto.UserDTO;
 import fr.ecommerce.dto.UserUpdateDTO;
+import fr.ecommerce.exceptions.EmailOrUsernameAlreadyExistsException;
 import fr.ecommerce.exceptions.UserNotFoundException;
 import fr.ecommerce.mappers.UserMapper;
 import fr.ecommerce.models.entities.User;
 import fr.ecommerce.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +21,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * The type User service.
+ */
 @Service
 public class UserService {
 
@@ -27,24 +33,44 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    /**
+     * Instantiates a new User service.
+     *
+     * @param userRepository  the user repository
+     * @param passwordEncoder the password encoder
+     */
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         System.out.println("PasswordEncoder utilisé : " + passwordEncoder.getClass().getName());
     }
 
+    /**
+     * Gets all users.
+     *
+     * @return the all users
+     */
     public List<UserDTO> getAllUsers() {
 
         List<User> users = userRepository.findAll();
 
         return users.stream()
-                .map(userMapper::toDTO) // Utilisation du UserMapper pour convertir chaque User en UserDTO
+                .map(userMapper::toDTO)
                 .collect(Collectors.toList());
     }
-    // 🔹 Création avec RegisterDTO
-    public UserDTO createUser(RegisterDTO registerDTO) {
-        checkEmailAndUsernameUniqueness(registerDTO.email(), registerDTO.username());
 
+    /**
+     * Create user user dto.
+     *
+     * @param registerDTO the register dto
+     * @return the user dto
+     */
+    public UserDTO createUser(RegisterDTO registerDTO) {
+        try {
+            checkEmailAndUsernameUniqueness(registerDTO.email(), registerDTO.username());
+        } catch (EmailOrUsernameAlreadyExistsException e) {
+            throw new RuntimeException("L'email ou le nom d'utilisateur est déjà pris");
+        }
         User user = new User();
         user.setFirstname(registerDTO.firstname());
         user.setName(registerDTO.name());
@@ -57,6 +83,27 @@ public class UserService {
         return convertToDTO(savedUser);
     }
 
+    /**
+     * Gets current user id.
+     *
+     * @return the current user id
+     */
+    public Long getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            User user = (User) authentication.getPrincipal(); // Caster en ton entité User
+            return user.getId(); // Récupérer directement l'ID
+        }
+        throw new SecurityException("Utilisateur non authentifié");
+    }
+
+    /**
+     * Update user user dto.
+     *
+     * @param id            the id
+     * @param userUpdateDTO the user update dto
+     * @return the user dto
+     */
     public UserDTO updateUser(Long id, UserUpdateDTO userUpdateDTO) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
@@ -68,6 +115,12 @@ public class UserService {
         return userMapper.toDTO(updatedUser);
     }
 
+    /**
+     * Update password.
+     *
+     * @param email the email
+     * @param dto   the dto
+     */
     public void updatePassword(String email, UpdatePasswordDTO dto) {
         // Récupération de l'utilisateur depuis la base
         User user = userRepository.findByEmail(email)
@@ -97,6 +150,12 @@ public class UserService {
         }
     }
 
+    /**
+     * Gets user by id.
+     *
+     * @param id the id
+     * @return the user by id
+     */
     public UserDTO getUserById(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
@@ -104,7 +163,13 @@ public class UserService {
         return userMapper.toDTO(user);
     }
 
-    // 🔹 Trouver par username/email
+    /**
+     * Find by username or email optional.
+     *
+     * @param usernameOrEmail the username or email
+     * @return the optional
+     */
+// 🔹 Trouver par username/email
     public Optional<UserDTO> findByUsernameOrEmail(String usernameOrEmail) {
         // Recherche un utilisateur par username ou email
         Optional<User> user = userRepository.findByUsername(usernameOrEmail)
@@ -114,7 +179,13 @@ public class UserService {
         return user.map(userMapper::toDTO);
     }
 
-    // 🔹 Convertir en DTO sans password
+    /**
+     * Convert to dto user dto.
+     *
+     * @param user the user
+     * @return the user dto
+     */
+// 🔹 Convertir en DTO sans password
     public UserDTO convertToDTO(User user) {
         return new UserDTO(
                 user.getId(),
@@ -129,6 +200,11 @@ public class UserService {
         );
     }
 
+    /**
+     * Delete user.
+     *
+     * @param id the id
+     */
     @Transactional
     public void deleteUser(Long id) {
         if (!userRepository.existsById(id)) {

@@ -26,13 +26,26 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtFilter jwtFilter) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())  // Désactiver CSRF (tu peux ajuster si JWT est en place)
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()       // Endpoints publics (login et inscription)
-                        .requestMatchers("/admin/**").hasRole("ADMIN") // ADMIN uniquement
+                        .requestMatchers("/auth/**").permitAll()
+
+                        // Endpoints sécurisés par rôles
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/user/**").hasRole("USER")
-                        .requestMatchers("/api/users/**").permitAll()// USER uniquement
-                        .anyRequest().authenticated()                 // Toutes les autres requêtes sécurisées
+                        .requestMatchers("/api/producers/**").hasRole("PRODUCER")
+
+                        // Accès basé sur des permissions spécifiques
+                        .requestMatchers("/products/**").hasAuthority("MANAGE_PRODUCT")
+                        .requestMatchers("/admin/delete/**").hasAuthority("DELETE_USER") // Suppression de l'utilisateur
+
+                        // Toute autre requête nécessite une authentification
+                        .anyRequest().authenticated()             // Toutes les autres requêtes sécurisées
+                )
+                .headers(headers -> headers
+                        .contentSecurityPolicy(csp -> csp
+                                .policyDirectives("default-src 'self' http://localhost:3000; script-src 'self' http://localhost:3000")
+                        )
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
@@ -45,7 +58,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // Utilisé dans tes services pour encoder les mots de passe
+        return new BCryptPasswordEncoder();
     }
 }
 

@@ -4,19 +4,22 @@ import fr.ecommerce.constants.UserRoleName;
 import fr.ecommerce.models.base.AbstractEntity;
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "roles")
 public class Role extends AbstractEntity {
+
     @Enumerated(EnumType.STRING)
     @Column(name = "name", nullable = false)
     private UserRoleName name;
 
-    @OneToMany(mappedBy = "role")
-    private List<RolePermission> rolePermissions;
+    @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
+    private Set<RolePermission> rolePermissions = new HashSet<>();
 
-    @OneToMany(mappedBy = "role")
+    @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
     private List<UserRole> userRoles;
 
 
@@ -28,11 +31,11 @@ public class Role extends AbstractEntity {
         this.name = name;
     }
 
-    public List<RolePermission> getRolePermissions() {
+    public Set<RolePermission> getRolePermissions() {
         return rolePermissions;
     }
 
-    public void setRolePermissions(List<RolePermission> rolePermissions) {
+    public void setRolePermissions(Set<RolePermission> rolePermissions) {
         this.rolePermissions = rolePermissions;
     }
 
